@@ -6,13 +6,14 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
     console.log('username:', username);
     console.log('password:', password);
 
-    const response = await fetch('register', {
+    let data = { username : username, password : password}
 
+    const response = await fetch('register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(data),
     });
 
     const result = await response.json();

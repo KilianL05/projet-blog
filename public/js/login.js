@@ -1,3 +1,6 @@
+import {getCookie} from "./utils.js";
+
+
 document.getElementById('loginForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const username = document.getElementById('loginUsername').value;
@@ -13,9 +16,9 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
 
     const result = await response.json();
     if (response.ok) {
-        alert(result.message);
-        // Stocker le token pour une utilisation future, par exemple:
-        localStorage.setItem('authToken', result.token);
+        localStorage.setItem('JWT', result.token);
+        const redirectPath = getCookie('redirectPath');
+        window.location.href = redirectPath ? redirectPath : '/';
     } else {
         alert(result.error);
     }

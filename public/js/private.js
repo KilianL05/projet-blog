@@ -1,7 +1,5 @@
-import {createCookie} from "./utils.js";
-
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('/blogs')
+    fetch('/blogsPrivate')
         .then(response => response.json())
         .then(blogs => {
             const blogsContainer = document.getElementById('blogsContainer');
@@ -19,18 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('blogsContainer').innerText = 'Erreur lors du chargement des blogs.';
         });
 });
-
-document.getElementById('accessPrivateBlog').addEventListener('click', () => {
-    const token = localStorage.getItem('JWT');
-    if (!token) {
-        createCookie("redirectPath", "/blogs/private", 3600)
-        window.location.href = '/login';
-    } else {
-        window.location.href = '/blogs/private';
-    }
-});
-
-
 
 function navigateToDetails(id) {
     window.location.href = `/blog/${id}`;

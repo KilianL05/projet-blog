@@ -4,7 +4,10 @@ const Blog = require('../models/Blog');
 const User = require('../models/User');
 const Article = require('../models/Article');
 const path = require("path");
-const {hash} = require("bcrypt");
+const {hash, compare} = require("bcrypt");
+const {sign} = require("jsonwebtoken");
+const {where} = require("sequelize");
+
 
 
 /////AUTHENTIFICATION////
@@ -18,18 +21,18 @@ router.get("/register", (req, res) => {
 })
 // Inscription
 router.post('/register', async (req, res) => {
+    console.log(req)
     try {
         const { username, password } = req.body;
+        console.log(req.body.username)
+
 
         // Hachage du mot de passe
         const hashedPassword = await hash(password, 10);
 
-        console.log('username:', username);
-        console.log('password:', hashedPassword);
-
         // Création de l'utilisateur
         const newUser = await User.create({
-            username: username,
+            email: username,
             password: hashedPassword
         });
 
@@ -49,24 +52,23 @@ router.post('/login', async (req, res) => {
         const { username, password } = req.body;
 
         // Vérification de l'utilisateur
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { email : username } });
         if (!user) {
             return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
         }
 
         // Validation du mot de passe
-        const validPassword = await bcrypt.compare(password, user.password);
+        const validPassword = await compare(password, user.password);
         if (!validPassword) {
-            return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
+            return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
         }
-
         // Création du token
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ message: 'Authentification réussie!', token });
 
     } catch (err) {
-        res.status(500).json({ error: 'Une erreur s’est produite lors de l’authentification.' });
+        res.status(500).json({ error: 'Une erreur s’est produite lors de l’authentification.' + err });
     }
 });
 
@@ -74,6 +76,10 @@ router.post('/login', async (req, res) => {
 
 router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+router.get('/blogs/private', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/private.html'));
 });
 
 // Route pour rendre la page des détails d'un blog
@@ -108,13 +114,24 @@ router.get('/blogs/:id', async (req, res) => {
 // Route pour obtenir tous les blogs
 router.get('/blogs', async (req, res) => {
     try {
-        const blogs = await Blog.findAll();
+        const blogs = await Blog.findAll({where : { isPublic : 1 }});
         res.json(blogs);
     } catch (err) {
         console.error('Erreur lors de la récupération des blogs :', err);
         res.status(500).json({ error: 'Erreur lors de la récupération des blogs.' });
     }
 });
+
+router.get('/blogsPrivate', async (req, res) => {
+    try {
+        const blogs = await Blog.findAll({where : { isPublic : 0 }});
+        res.json(blogs);
+    } catch (err) {
+        console.error('Erreur lors de la récupération des blogs :', err);
+        res.status(500).json({ error: 'Erreur lors de la récupération des blogs.' });
+    }
+});
+
 
 module.exports = router;
 
