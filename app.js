@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const sequelize = require('./sequelize');
 const indexRoutes = require('./routes/index');
+const authRoutes = require('./routes/auth');
 const { join } = require("node:path");
 require('./associations');
 require('./models/User');
@@ -26,6 +27,7 @@ app.use(session({
 
 // Use routes
 app.use('/', indexRoutes);
+app.use('/', authRoutes);
 
 sequelize.sync({ force: false }).then(() => {
     console.log('Tables synchronisées.');

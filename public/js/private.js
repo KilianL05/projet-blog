@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const token = sessionStorage.getItem('token');
     fetch('/blogsPrivate', {
         headers: {
-            'Authorization': token ? `Bearer ${token}` : ''
+            'Authorization': token ? `Bearer ${token}` : ""
         }
     })
         .then(response => {

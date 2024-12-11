@@ -9,56 +9,6 @@ const {sign} = require("jsonwebtoken");
 const {where} = require("sequelize");
 const {generateToken, authenticateToken} = require("../middlewares/auth");
 
-
-/////AUTHENTIFICATION////
-
-router.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
-})
-
-router.get("/register", (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
-})
-// Inscription
-router.post('/register', async (req, res) => {
-    try {
-        const {username, password} = req.body;
-        const hashedPassword = await hash(password, 10);
-
-        const newUser = await User.create({
-            email: username,
-            password: hashedPassword
-        });
-        res.status(201).json({message: 'Utilisateur créé avec succès!'});
-    } catch (err) {
-        res.status(500).json({error: 'Une erreur s’est produite lors de l’inscription.' + err});
-    }
-});
-
-
-// Authentification
-router.post('/login', async (req, res) => {
-    try {
-        const {username, password} = req.body;
-
-        const user = await User.findOne({where: {email: username}});
-        if (!user) {
-            return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
-        }
-
-        // Validate the password
-        const validPassword = await compare(password, user.password);
-        if (!validPassword) {
-            return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
-        }
-        const token = generateToken(user);
-
-        res.json({token: token});
-    } catch (err) {
-        res.status(500).json({error: 'Une erreur s’est produite lors de l’authentification.' + err});
-    }
-});
-
 /////BLOG////
 
 router.get('/', (req, res) => {
