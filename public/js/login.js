@@ -1,6 +1,3 @@
-import {getCookie} from "./utils.js";
-
-
 document.getElementById('loginForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const username = document.getElementById('loginUsername').value;
@@ -16,9 +13,8 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
 
     const result = await response.json();
     if (response.ok) {
-        localStorage.setItem('JWT', result.token);
-        const redirectPath = getCookie('redirectPath');
-        window.location.href = redirectPath ? redirectPath : '/';
+        sessionStorage.setItem('token', result.token);
+        window.location.href = '/';
     } else {
         alert(result.error);
     }

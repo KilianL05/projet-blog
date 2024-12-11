@@ -7,7 +7,7 @@ const path = require("path");
 const {hash, compare} = require("bcrypt");
 const {sign} = require("jsonwebtoken");
 const {where} = require("sequelize");
-
+const {generateToken, authenticateToken} = require("../middlewares/auth");
 
 
 /////AUTHENTIFICATION////
@@ -21,54 +21,41 @@ router.get("/register", (req, res) => {
 })
 // Inscription
 router.post('/register', async (req, res) => {
-    console.log(req)
     try {
-        const { username, password } = req.body;
-        console.log(req.body.username)
-
-
-        // Hachage du mot de passe
+        const {username, password} = req.body;
         const hashedPassword = await hash(password, 10);
 
-        // Création de l'utilisateur
         const newUser = await User.create({
             email: username,
             password: hashedPassword
         });
-
-        res.status(201).json({ message: 'Utilisateur créé avec succès!' });
-
+        res.status(201).json({message: 'Utilisateur créé avec succès!'});
     } catch (err) {
-        console.error('Erreur lors de l’inscription :', err);
-        res.status(500).json({ error: 'Une erreur s’est produite lors de l’inscription.' + err });
+        res.status(500).json({error: 'Une erreur s’est produite lors de l’inscription.' + err});
     }
 });
-
 
 
 // Authentification
 router.post('/login', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const {username, password} = req.body;
 
-        // Vérification de l'utilisateur
-        const user = await User.findOne({ where: { email : username } });
+        const user = await User.findOne({where: {email: username}});
         if (!user) {
-            return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
+            return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
         }
 
-        // Validation du mot de passe
+        // Validate the password
         const validPassword = await compare(password, user.password);
         if (!validPassword) {
             return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
         }
-        // Création du token
-        const token = sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = generateToken(user);
 
-        res.json({ message: 'Authentification réussie!', token });
-
+        res.json({token: token});
     } catch (err) {
-        res.status(500).json({ error: 'Une erreur s’est produite lors de l’authentification.' + err });
+        res.status(500).json({error: 'Une erreur s’est produite lors de l’authentification.' + err});
     }
 });
 
@@ -88,8 +75,6 @@ router.get('/blog/:id', (req, res) => {
 });
 
 
-
-
 // Route pour obtenir un blog par son ID avec ses articles
 router.get('/blogs/:id', async (req, res) => {
     try {
@@ -102,11 +87,11 @@ router.get('/blogs/:id', async (req, res) => {
         if (blog) {
             res.json(blog);
         } else {
-            res.status(404).json({ error: 'Blog non trouvé' });
+            res.status(404).json({error: 'Blog non trouvé'});
         }
     } catch (err) {
         console.error('Erreur lors de la récupération du blog :', err);
-        res.status(500).json({ error: 'Erreur lors de la récupération du blog.' });
+        res.status(500).json({error: 'Erreur lors de la récupération du blog.'});
     }
 });
 
@@ -114,29 +99,28 @@ router.get('/blogs/:id', async (req, res) => {
 // Route pour obtenir tous les blogs
 router.get('/blogs', async (req, res) => {
     try {
-        const blogs = await Blog.findAll({where : { isPublic : 1 }});
+        const blogs = await Blog.findAll({where: {isPublic: 1}});
         res.json(blogs);
     } catch (err) {
         console.error('Erreur lors de la récupération des blogs :', err);
-        res.status(500).json({ error: 'Erreur lors de la récupération des blogs.' });
+        res.status(500).json({error: 'Erreur lors de la récupération des blogs.'});
     }
 });
 
-router.get('/blogsPrivate', async (req, res) => {
+router.get('/blogsPrivate', authenticateToken, async (req, res) => {
     try {
-        const blogs = await Blog.findAll({where : { isPublic : 0 }});
+        const blogs = await Blog.findAll({where: {isPublic: 0}});
         res.json(blogs);
     } catch (err) {
         console.error('Erreur lors de la récupération des blogs :', err);
-        res.status(500).json({ error: 'Erreur lors de la récupération des blogs.' });
+        res.status(500).json({error: 'Erreur lors de la récupération des blogs.'});
     }
 });
-
 
 module.exports = router;
 
 // Route pour générer un nouveau blog
-router.post('/generate-blog', async (req, res) => {
+router.post('/blog/create', authenticateToken, async (req, res) => {
     try {
         const newBlog = await Blog.create({
             title: `Blog généré à ${new Date().toLocaleString()}`,
@@ -145,7 +129,7 @@ router.post('/generate-blog', async (req, res) => {
         res.json(newBlog);
     } catch (err) {
         console.error('Erreur lors de la génération du blog :', err);
-        res.status(500).json({ error: 'Erreur lors de la génération du blog.' });
+        res.status(500).json({error: 'Erreur lors de la génération du blog.'});
     }
 });
 

@@ -16,6 +16,10 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
         body: JSON.stringify(data),
     });
 
-    const result = await response.json();
-    alert(result.message || result.error);
+    if (response.ok) {
+        window.location.href = '/login';
+    }
+    else {
+        alert('Erreur lors de l’inscription.');
+    }
 });

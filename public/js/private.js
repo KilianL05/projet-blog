@@ -1,5 +1,12 @@
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('/blogsPrivate')
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const token = sessionStorage.getItem('token');
+    fetch('/blogsPrivate', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
         .then(response => response.json())
         .then(blogs => {
             const blogsContainer = document.getElementById('blogsContainer');
