@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .then(blogs => {
-            const blogsContainer = document.getElementById('blogsContainer');
+            const blogsContainer = document.getElementById('privateBlogsContainer');
             blogs.forEach(blog => {
                 const blogElement = document.createElement('div');
                 blogElement.innerHTML = `
                     <h2>${blog.title}</h2>
-                    <button onclick="navigateToDetails(${blog.id})">Voir Détails</button>
+                  <a href="/blog/${blog.id}">Voir Détails</a>
                 `;
                 blogsContainer.appendChild(blogElement);
             });
@@ -31,7 +31,3 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('blogsContainer').innerText = 'Erreur lors du chargement des blogs.';
         });
 });
-
-function navigateToDetails(id) {
-    window.location.href = `/blog/${id}`;
-}
