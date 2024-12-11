@@ -15,6 +15,16 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    twoFactorEnabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    twoFactorSecret: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
+
 module.exports = User;

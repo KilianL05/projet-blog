@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../models/User');
 const path = require("path");
 const { hash, compare } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -8,6 +9,8 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc');
 const User = require('../models/User');
 const FederatedCredentials = require('../models/FederatedCredentials'); // Correct import
+const {hash, compare} = require("bcrypt");
+const {generateToken} = require("../middlewares/auth");
 
 const routerAuth = express.Router();
 
@@ -88,19 +91,20 @@ routerAuth.post('/login', async (req, res) => {
 
         const user = await User.findOne({ where: { email: username } });
         if (!user) {
-            return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
+            return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
         }
 
+        // Validate the password
         const validPassword = await compare(password, user.password);
         if (!validPassword) {
-            return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
+            return res.status(400).json({error: 'Nom d’utilisateur ou mot de passe incorrect.'});
         }
         const token = generateToken(user);
 
-        res.json({ token: token });
+        res.json({token: token});
     } catch (err) {
-        res.status(500).json({ error: 'Une erreur s’est produite lors de l’authentification.' + err });
+        res.status(500).json({error: 'Une erreur s’est produite lors de l’authentification.' + err});
     }
 });
 
-module.exports = routerAuth;
+module.exports = routerAuth ;

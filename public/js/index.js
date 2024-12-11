@@ -18,6 +18,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 });
 
+const twoFactorAuth = document.getElementById('setup2FAButton');
+twoFactorAuth.addEventListener("onclick", () => {
+    const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
+    console.log('token:', token);
+
+    if (!token) {
+        console.error('No token found in sessionStorage');
+        return;
+    }
+
+    fetch('/qrcode', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('qrcode-container').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+});
+
+
+
 document.getElementById('accessPrivateBlog').addEventListener('click', async (e) => {
     window.location.href = '/blogs/private';
 });

@@ -18,9 +18,19 @@ function authenticateToken(req, res, next) {
     });
 }
 
-
-function generateToken(user) {
-    return jwt.sign({ id: user.id, twoFactorEnabled: user.twoFactorEnabled }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+function verify2FaEnabled(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return res.sendStatus(401);
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(user);
+    if (!user.twoFactorEnabled) return res.sendStatus(403);
+    next();
 }
 
-module.exports = { authenticateToken, generateToken };
+
+function generateToken(user) {
+    return jwt.sign({ id: user.id, email: user.email, twoFactorEnabled: user.twoFactorEnabled }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+}
+
+module.exports = { authenticateToken, generateToken, verify2FaEnabled };

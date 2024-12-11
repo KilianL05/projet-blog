@@ -31,8 +31,9 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (response.status === 401) {
                 window.location.href = '/login';
                 throw new Error('Unauthorized');
-            } else {
-                throw new Error('Unexpected response status: ' + response.status);
+            } else if (response.status === 403) {
+                // window.location.href = '/';
+                throw new Error('Forbidden, 2FA not enabled');
             }
         })
         .then(blogs => {
@@ -41,13 +42,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const blogElement = document.createElement('div');
                 blogElement.innerHTML = `
                     <h2>${blog.title}</h2>
-                  <a href="/blog/${blog.id}">Voir Détails</a>
+                    <a href="/blog/${blog.id}">Voir Détails</a>
                 `;
                 blogsContainer.appendChild(blogElement);
             });
         })
         .catch(error => {
             console.error('Erreur lors de la récupération des blogs :', error);
-            document.getElementById('blogsContainer').innerText = 'Erreur lors du chargement des blogs.';
+            document.getElementById('privateBlogsContainer').innerText = 'Erreur lors du chargement des blogs.' + error;
         });
 });

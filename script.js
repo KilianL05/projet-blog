@@ -3,67 +3,46 @@ const Blog = require('./models/Blog');
 const Article = require('./models/Article');
 const User = require('./models/User');
 
-async function generateBlogsAndArticles() {
+async function createUser(email, password, twoFactorEnabled) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return User.create({
+        email,
+        password: hashedPassword,
+        twoFactorEnabled,
+        twoFactorSecret: null // Set the twoFactorSecret field to null
+    });
+}
+
+async function createBlogWithArticles(user, title, description, isPublic) {
+    const blog = await Blog.create({
+        title,
+        description,
+        isPublic,
+        userId: user.id
+    });
+
+    const articlePromises = [];
+    for (let j = 0; j < 3; j++) {
+        articlePromises.push(Article.create({
+            title: `${title} - Article ${j + 1}`,
+            content: `Content for article ${j + 1} of ${title}`,
+            blogId: blog.id
+        }));
+    }
+    await Promise.all(articlePromises);
+}
+
+async function generateDatas() {
     try {
-        // Hash the password
-        const hashedPassword = await bcrypt.hash('password123', 10);
+        const user1 = await createUser('user1@example.com', 'password123', true);
+        const user2 = await createUser('user2@example.com', 'password123', false);
 
-        // Create a user with the hashed password
-        const user = await User.create({
-            email: 'user@example.com',
-            password: hashedPassword
-        });
-
-        // Array of promises to create blogs and articles
         const blogPromises = [];
+        blogPromises.push(createBlogWithArticles(user1, 'Tech Trends', 'Latest trends in technology', true));
+        blogPromises.push(createBlogWithArticles(user1, 'Personal Diary', 'Daily personal thoughts and experiences', false));
+        blogPromises.push(createBlogWithArticles(user2, 'Travel Adventures', 'Stories from around the world', true));
+        blogPromises.push(createBlogWithArticles(user2, 'Cooking Secrets', 'Delicious recipes and cooking tips', false));
 
-        for (let i = 0; i < 3; i++) {
-            // Create a public blog
-            const publicBlogPromise = Blog.create({
-                title: `Public Blog ${i + 1}`,
-                description: `Description for public blog ${i + 1}`,
-                isPublic: true,
-                userId: user.id // Associate the blog with the user
-            }).then(publicBlog => {
-                // Create 3 articles for each public blog
-                const articlePromises = [];
-                for (let j = 0; j < 3; j++) {
-                    articlePromises.push(Article.create({
-                        title: `Article ${j + 1} for Public Blog ${i + 1}`,
-                        content: `Content for article ${j + 1} of public blog ${i + 1}`,
-                        blogId: publicBlog.id
-                    }));
-                }
-                return Promise.all(articlePromises);
-            });
-
-            // Add the promise to the list
-            blogPromises.push(publicBlogPromise);
-
-            // Create a private blog
-            const privateBlogPromise = Blog.create({
-                title: `Private Blog ${i + 1}`,
-                description: `Description for private blog ${i + 1}`,
-                isPublic: false,
-                userId: user.id // Associate the blog with the user
-            }).then(privateBlog => {
-                // Create 3 articles for each private blog
-                const articlePromises = [];
-                for (let j = 0; j < 3; j++) {
-                    articlePromises.push(Article.create({
-                        title: `Article ${j + 1} for Private Blog ${i + 1}`,
-                        content: `Content for article ${j + 1} of private blog ${i + 1}`,
-                        blogId: privateBlog.id
-                    }));
-                }
-                return Promise.all(articlePromises);
-            });
-
-            // Add the promise to the list
-            blogPromises.push(privateBlogPromise);
-        }
-
-        // Execute all promises to create blogs and articles
         await Promise.all(blogPromises);
 
         console.log('Blogs and articles have been successfully generated.');
@@ -73,4 +52,4 @@ async function generateBlogsAndArticles() {
 }
 
 // Call the function to generate blogs
-generateBlogsAndArticles();
+generateDatas();

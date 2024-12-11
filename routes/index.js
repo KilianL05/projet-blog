@@ -1,13 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Blog = require('../models/Blog');
-const User = require('../models/User');
 const Article = require('../models/Article');
 const path = require("path");
-const {hash, compare} = require("bcrypt");
-const {sign} = require("jsonwebtoken");
-const {where} = require("sequelize");
-const {generateToken, authenticateToken} = require("../middlewares/auth");
+const {verify2FaEnabled} = require("../middlewares/auth");
 
 /////BLOG////
 
@@ -57,7 +53,7 @@ router.get('/blogs', async (req, res) => {
     }
 });
 
-router.get('/blogsPrivate', authenticateToken, async (req, res) => {
+router.get('/blogsPrivate', verify2FaEnabled, async (req, res) => {
     try {
         const blogs = await Blog.findAll({where: {isPublic: 0}});
         res.json(blogs);
@@ -67,10 +63,8 @@ router.get('/blogsPrivate', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
-
 // Route pour générer un nouveau blog
-router.post('/blog/create', authenticateToken, async (req, res) => {
+router.post('/blog/create', verify2FaEnabled, async (req, res) => {
     try {
         const newBlog = await Blog.create({
             title: `Blog généré à ${new Date().toLocaleString()}`,
