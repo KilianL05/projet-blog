@@ -1,6 +1,7 @@
 // models/User.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize');
+const Blog = require('./Blog'); // Ensure Blog is imported after sequelize is defined
 
 const User = sequelize.define('User', {
     email: {
@@ -11,11 +12,10 @@ const User = sequelize.define('User', {
             isEmail: true
         }
     },
-    password : {
+    password: {
         type: DataTypes.STRING,
         allowNull: false
     }
-
 });
 
 module.exports = User;

@@ -1,6 +1,7 @@
 // associations.js
 const Article = require('./models/Article');
 const Blog = require('./models/Blog');
+const User = require("./models/User");
 
 Blog.hasMany(Article, {
     foreignKey: {
@@ -16,3 +17,7 @@ Article.belongsTo(Blog, {
         allowNull: false
     }
 });
+
+Blog.belongsTo(User, { foreignKey: 'userId', as: 'User' });
+
+User.hasMany(Blog, { foreignKey: 'userId', as: 'Blogs' });

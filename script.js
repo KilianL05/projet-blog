@@ -1,20 +1,31 @@
-// Assurez-vous d'avoir mis en place Sequelize et d'importer vos modèles.
+const bcrypt = require('bcrypt');
 const Blog = require('./models/Blog');
 const Article = require('./models/Article');
+const User = require('./models/User');
 
 async function generateBlogsAndArticles() {
     try {
-        // Array de promesses pour créer blogs et articles
+        // Hash the password
+        const hashedPassword = await bcrypt.hash('password123', 10);
+
+        // Create a user with the hashed password
+        const user = await User.create({
+            email: 'user@example.com',
+            password: hashedPassword
+        });
+
+        // Array of promises to create blogs and articles
         const blogPromises = [];
 
         for (let i = 0; i < 3; i++) {
-            // Créez un blog public
+            // Create a public blog
             const publicBlogPromise = Blog.create({
                 title: `Public Blog ${i + 1}`,
                 description: `Description for public blog ${i + 1}`,
-                isPublic: true
+                isPublic: true,
+                userId: user.id // Associate the blog with the user
             }).then(publicBlog => {
-                // Créez 3 articles pour chaque blog public
+                // Create 3 articles for each public blog
                 const articlePromises = [];
                 for (let j = 0; j < 3; j++) {
                     articlePromises.push(Article.create({
@@ -26,16 +37,17 @@ async function generateBlogsAndArticles() {
                 return Promise.all(articlePromises);
             });
 
-            // Ajoutez la promesse à la liste
+            // Add the promise to the list
             blogPromises.push(publicBlogPromise);
 
-            // Créez un blog privé
+            // Create a private blog
             const privateBlogPromise = Blog.create({
                 title: `Private Blog ${i + 1}`,
                 description: `Description for private blog ${i + 1}`,
-                isPublic: false
+                isPublic: false,
+                userId: user.id // Associate the blog with the user
             }).then(privateBlog => {
-                // Créez 3 articles pour chaque blog privé
+                // Create 3 articles for each private blog
                 const articlePromises = [];
                 for (let j = 0; j < 3; j++) {
                     articlePromises.push(Article.create({
@@ -47,18 +59,18 @@ async function generateBlogsAndArticles() {
                 return Promise.all(articlePromises);
             });
 
-            // Ajoutez la promesse à la liste
+            // Add the promise to the list
             blogPromises.push(privateBlogPromise);
         }
 
-        // Exécuter toutes les promesses pour créer les blogs et articles
+        // Execute all promises to create blogs and articles
         await Promise.all(blogPromises);
 
-        console.log('Les blogs et les articles ont été générés avec succès.');
+        console.log('Blogs and articles have been successfully generated.');
     } catch (err) {
-        console.error('Erreur lors de la génération des blogs et articles :', err);
+        console.error('Error generating blogs and articles:', err);
     }
 }
 
-// Appelez la fonction pour générer les blogs
+// Call the function to generate blogs
 generateBlogsAndArticles();
