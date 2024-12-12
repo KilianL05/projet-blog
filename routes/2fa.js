@@ -49,13 +49,14 @@ router2fa.post('/verify-2fa', async (req, res) => {
     const username = req.body.username;
     const token = req.body.token;
 
-    const user = await User.findOne({where: {email: username}});
+    let user = await User.findOne({where: {email: username}});
     const authenticatorSecret = user.twoFactorSecret;
 
     const isValid = authenticator.verify({token, secret: authenticatorSecret});
 
     if (isValid) {
         await User.update({twoFactorEnabled: true}, {where: {email: username}});
+        user = await User.findOne({where: {email: username}});
 
         const newToken = generateToken(user);
 
