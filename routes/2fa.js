@@ -30,7 +30,14 @@ router2fa.get('/qrcode', authenticateToken, async (req, res) => {
         if (err) {
             res.status(500).send('Oups, une erreur est survenue');
         }
-        res.send(`<img src="${imageSrc}" alt='qrcode'><br><a href="/verify-2fa?username=${username}">Verify 2FA</a>`);
+        res.send(`
+    <div class="flex flex-col items-center justify-center bg-gray-100">
+        <div class="bg-white p-6 rounded shadow-md text-center">
+            <img src="${imageSrc}" alt="qrcode" class="mb-4">
+            <a href="/verify-2fa?username=${username}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Vérifier la 2FA</a>
+        </div>
+    </div>
+`);
     });
 });
 router2fa.get('/verify-2fa', (req, res) => {
