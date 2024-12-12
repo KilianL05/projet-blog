@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.text();
         })
         .then(html => {
+            console.log('html:', html);
             document.getElementById('qrcode-container').innerHTML = html;
         })
         .catch(error => {

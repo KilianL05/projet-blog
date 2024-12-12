@@ -4,7 +4,7 @@ const {authenticator} = require('otplib');
 const qrcode = require('qrcode');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const {authenticateToken} = require("../middlewares/auth");
+const {authenticateToken, generateToken} = require("../middlewares/auth");
 const path = require("path");
 
 const router2fa = express.Router();
@@ -56,7 +56,11 @@ router2fa.post('/verify-2fa', async (req, res) => {
 
     if (isValid) {
         await User.update({twoFactorEnabled: true}, {where: {email: username}});
-        res.json({message: "2FA setup complete. You can now log in with 2FA."});
+
+        const newToken = generateToken(user);
+
+        res.cookie('jwt', newToken, { httpOnly: true, secure: true });
+        res.redirect('/');
     } else {
         res.send("Mauvais code");
     }
