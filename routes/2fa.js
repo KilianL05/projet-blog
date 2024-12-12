@@ -15,7 +15,16 @@ router2fa.get('/2fa', (req, res) => {
 router2fa.get('/qrcode', authenticateToken, async (req, res) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+    const session = await Session.findOne({where: {token: token}});
 
+    let user = await User.findOne({where: {id: session.userId}});
+    if (!user) {
+        return res.status(404).send("User not found");
+    }
+
+    if (user.twoFactorEnabled) {
+        return res.status(400).send("2FA already enabled");
+    }
 
     const payload = jwt.decode(token);
     const username = payload.email;
@@ -24,6 +33,7 @@ router2fa.get('/qrcode', authenticateToken, async (req, res) => {
     const authenticatorSecret = authenticator.generateSecret();
 
     await User.update({twoFactorSecret: authenticatorSecret}, {where: {email: username}});
+
 
     const keyURI = authenticator.keyuri(username, service, authenticatorSecret);
     qrcode.toDataURL(keyURI, (err, imageSrc) => {
@@ -53,14 +63,16 @@ router2fa.post('/verify-2fa', async (req, res) => {
         return res.status(401).send("Authorization token missing or invalid");
     }
 
-    let user = await User.findOne({ where: { email: username } });
+    let user = await User.findOne({where: {email: username}});
     const authenticatorSecret = user.twoFactorSecret;
+    console.log("authenticatorSecret", authenticatorSecret);
+    console.log("token", token);
 
-    const isValid = authenticator.verify({ token, secret: authenticatorSecret });
+    const isValid = authenticator.verify({token, secret: authenticatorSecret});
 
     if (isValid) {
-        await User.update({ twoFactorEnabled: true }, { where: { email: username } });
-        user = await User.findOne({ where: { email: username } });
+        await User.update({twoFactorEnabled: true}, {where: {email: username}});
+        user = await User.findOne({where: {email: username}});
 
         const newToken = generateToken(user);
         const expiresAt = new Date(Date.now() + 3600000); // 1 hour
@@ -68,9 +80,9 @@ router2fa.post('/verify-2fa', async (req, res) => {
         console.log("newToken", newToken);
         console.log("oldToken", authToken);
         // Update the session with the new token
-        await Session.update({ token: newToken, expiresAt: expiresAt }, { where: { userId: user.id, token: authToken } });
+        await Session.update({token: newToken, expiresAt: expiresAt}, {where: {userId: user.id, token: authToken}});
 
-        res.cookie('jwt', newToken, { secure: true });
+        res.cookie('jwt', newToken, {secure: true});
         res.redirect('/');
     } else {
         res.send("Mauvais code");

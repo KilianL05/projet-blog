@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
     const authButton = document.getElementById('authButton');
     const personalSpaceButton = document.getElementById('personalSpaceButton');
+
     personalSpaceButton.addEventListener('click', async () => {
         const response = await fetch('/personal-spaceCheck', {
             method: 'GET',
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    console.log('Token:', token);
     if (!token) {
         personalSpaceButton.classList.add('hidden');
     }

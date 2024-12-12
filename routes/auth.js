@@ -1,12 +1,13 @@
 const express = require('express');
 const path = require("path");
 const { hash, compare } = require("bcrypt");
-const { generateToken, authenticateToken } = require("../middlewares/auth");
+const { generateToken, authenticateToken, verify2FaEnabled} = require("../middlewares/auth");
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc');
 const User = require('../models/User');
 const Session = require('../models/Session');
-const FederatedCredentials = require('../models/FederatedCredentials'); // Correct import
+const FederatedCredentials = require('../models/FederatedCredentials');
+const {authenticator} = require("otplib"); // Correct import
 
 const routerAuth = express.Router();
 
@@ -19,11 +20,9 @@ routerAuth.get('/login/federated/google', passport.authenticate('google'));
 routerAuth.get('/oauth2/redirect/google', passport.authenticate('google', {
     failureRedirect: '/login'
 }), async (req, res) => {
-    // Generate JWT token
     const token = generateToken(req.user);
     const expiresAt = new Date(Date.now() + 3600000); // 1 hour
 
-    // Create a new session
     await Session.create({ userId: req.user.id, token, expiresAt });
 
     res.cookie('jwt', token, { secure: true, maxAge: 3600000 }); // 1 hour
@@ -94,20 +93,16 @@ routerAuth.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
         }
 
-        // Validate the password
         const validPassword = await compare(password, user.password);
         if (!validPassword) {
             return res.status(400).json({ error: 'Nom d’utilisateur ou mot de passe incorrect.' });
         }
 
-        // Generate a JWT token
         const token = generateToken(user);
         const expiresAt = new Date(Date.now() + 3600000); // 1 hour
 
-        // Create a new session
         await Session.create({ userId: user.id, token, expiresAt });
 
-        // Send the token back to the client
         res.cookie('jwt', token, { secure: true });
         res.json({ token: token });
     } catch (err) {
@@ -121,6 +116,32 @@ routerAuth.post('/logout', authenticateToken, async (req, res) => {
 
     res.clearCookie('jwt');
     res.json({ message: 'Déconnexion réussie' });
+});
+
+routerAuth.post('/logout-all', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+    const code = req.body.code;
+
+    if (!code) {
+        return res.status(400).json({ error: 'Code de vérification manquant' });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user || !user.twoFactorSecret) {
+        return res.status(404).json({ error: 'Utilisateur ou secret 2FA introuvable' });
+    }
+
+    const isValid = authenticator.verify({ token: code, secret: user.twoFactorSecret });
+
+    if (!isValid) {
+        return res.status(401).json({ error: 'Code de vérification invalide' });
+    }
+
+    await User.update({ twoFactorEnabled: false, twoFactorSecret: null }, { where: { id: userId } });
+    await Session.destroy({ where: { userId } });
+
+    res.clearCookie('jwt');
+    res.json({ message: 'Déconnexion de tous les appareils réussie' });
 });
 
 module.exports = routerAuth;
