@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authButton.textContent = 'Déconnexion';
         authButton.addEventListener('click', () => {
             sessionStorage.removeItem('token');
-            window.location.reload();
+            window.location.href = '/';
         });
     } else {
         authButton.textContent = 'Connexion';
