@@ -2,11 +2,14 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
     event.preventDefault();
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
-    console.log('username:', username);
-    console.log('password:', password);
+    if (password !== confirmPassword) {
+        alert('Les mots de passe ne correspondent pas.');
+        return;
+    }
 
-    let data = { username : username, password : password}
+    let data = { username: username, password: password };
 
     const response = await fetch('register', {
         method: 'POST',
@@ -18,8 +21,7 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
 
     if (response.ok) {
         window.location.href = '/login';
-    }
-    else {
+    } else {
         alert('Erreur lors de l’inscription.');
     }
 });
