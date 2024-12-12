@@ -3,7 +3,7 @@ const router = express.Router();
 const Blog = require('../models/Blog');
 const Article = require('../models/Article');
 const path = require("path");
-const {verify2FaEnabled} = require("../middlewares/auth");
+const {verify2FaEnabled, authenticateToken} = require("../middlewares/auth");
 
 /////BLOG////
 
@@ -53,7 +53,7 @@ router.get('/blogs', async (req, res) => {
     }
 });
 
-router.get('/blogsPrivate', verify2FaEnabled, async (req, res) => {
+router.get('/blogsPrivate', authenticateToken, async (req, res) => {
     try {
         const blogs = await Blog.findAll({where: {isPublic: 0}});
         res.json(blogs);
