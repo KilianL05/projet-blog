@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
 const path = require("path");
 const { hash, compare } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -9,8 +8,6 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc');
 const User = require('../models/User');
 const FederatedCredentials = require('../models/FederatedCredentials'); // Correct import
-const {hash, compare} = require("bcrypt");
-const {generateToken} = require("../middlewares/auth");
 
 const routerAuth = express.Router();
 

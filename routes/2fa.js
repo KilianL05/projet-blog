@@ -1,6 +1,6 @@
 // routes/2fa.js
 const express = require('express');
-const { authenticator } = require('otplib');
+const {authenticator} = require('otplib');
 const qrcode = require('qrcode');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -15,15 +15,14 @@ router2fa.get('/qrcode', authenticateToken, async (req, res) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
 
-    // Decode the JWT to extract the username
+
     const payload = jwt.decode(token);
-    const username = payload.email; // Assuming the username is stored in the email field
+    const username = payload.email;
 
     const service = 'WebApp Auth';
     const authenticatorSecret = authenticator.generateSecret();
 
-    // Save the secret to the database
-    await User.update({ twoFactorSecret: authenticatorSecret }, { where: { email: username } });
+    await User.update({twoFactorSecret: authenticatorSecret}, {where: {email: username}});
 
     const keyURI = authenticator.keyuri(username, service, authenticatorSecret);
     qrcode.toDataURL(keyURI, (err, imageSrc) => {
@@ -47,19 +46,17 @@ router2fa.get('/verify-2fa', (req, res) => {
 });
 
 router2fa.post('/verify-2fa', async (req, res) => {
-    const { username } = req.body;
+    const username = req.body.username;
+    const token = req.body.token;
 
-    // Retrieve the secret from the database
-    const user = await User.findOne({ where: { email: username } });
+    const user = await User.findOne({where: {email: username}});
     const authenticatorSecret = user.twoFactorSecret;
 
-    const isValid = authenticator.verify({ token, secret: authenticatorSecret });
+    const isValid = authenticator.verify({token, secret: authenticatorSecret});
 
     if (isValid) {
-        // Update the user's twoFactorEnabled field to true
-        await User.update({ twoFactorEnabled: true }, { where: { email: username } });
-        // Send the new token back to the client
-        res.json({ message: "2FA setup complete. You can now log in with 2FA.", token: newToken });
+        await User.update({twoFactorEnabled: true}, {where: {email: username}});
+        res.json({message: "2FA setup complete. You can now log in with 2FA."});
     } else {
         res.send("Mauvais code");
     }
