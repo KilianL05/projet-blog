@@ -5,9 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const blogsContainer = document.getElementById('blogsContainer');
             blogs.forEach(blog => {
                 const blogElement = document.createElement('div');
+                blogElement.className = 'bg-white p-6 rounded shadow-md';
                 blogElement.innerHTML = `
-                    <h2>${blog.title}</h2>
-                    <a href="/blog/${blog.id}">Voir Détails</button>
+                    <h2 class="text-xl font-bold">${blog.title}</h2>
+                    <p>${blog.isPublic ? 'Public' : 'Privé'}</p>
+                    <a href="/blog/${blog.id}" class="text-blue-500 hover:underline">Voir Détails</a>
                 `;
                 blogsContainer.appendChild(blogElement);
             });

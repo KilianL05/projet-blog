@@ -1,30 +1,28 @@
-// Obtenez le chemin de l'URL
 const pathComponents = window.location.pathname.split('/');
-
-// Supposons que le dernier composant du chemin soit l'ID du blog
 const blogId = pathComponents[pathComponents.length - 1];
-
-console.log('blogId:', blogId);
 
 if (blogId) {
     fetch(`/blogs/${blogId}`)
         .then(response => response.json())
         .then(blog => {
-            console.log('Détails du blog:', blog);
             if (blog.error) {
                 document.getElementById('blogDetailContainer').innerText = 'Blog non trouvé.';
             } else {
                 const blogDetailContainer = document.getElementById('blogDetailContainer');
-                blogDetailContainer.innerHTML = `<h2>${blog.title}</h2><h3>Articles:</h3>`;
 
                 if (blog.Articles.length > 0) {
-                    const articlesList = document.createElement('ul');
+                    const articlesGrid = document.createElement('div');
+                    articlesGrid.className = 'mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
                     blog.Articles.forEach(article => {
-                        const articleItem = document.createElement('li');
-                        articleItem.innerText = article.title;
-                        articlesList.appendChild(articleItem);
+                        const articleCard = document.createElement('div');
+                        articleCard.className = 'bg-white p-4 rounded shadow-md';
+                        articleCard.innerHTML = `
+                            <h3 class="text-xl font-bold">${article.title}</h3>
+                            <p>${article.content}</p>
+                        `;
+                        articlesGrid.appendChild(articleCard);
                     });
-                    blogDetailContainer.appendChild(articlesList);
+                    blogDetailContainer.appendChild(articlesGrid);
                 } else {
                     blogDetailContainer.innerHTML += '<p>Aucun article associé.</p>';
                 }
