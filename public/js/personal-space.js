@@ -7,17 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleBlogFormButton = document.getElementById('toggleBlogForm');
     const toggleArticleFormButton = document.getElementById('toggleArticleForm');
 
-    // Toggle visibility of blog form
     toggleBlogFormButton.addEventListener('click', () => {
         blogForm.classList.toggle('hidden');
     });
 
-    // Toggle visibility of article form
-    toggleArticleFormButton.addEventListener('click', () => {
-        articleForm.classList.toggle('hidden');
-    });
 
-    // Fetch and display user's blogs with articles
     const fetchBlogs = async () => {
         const response = await fetch('/blogs/user', {
             headers: {
@@ -39,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             personalSpaceContainer.appendChild(blogElement);
 
-            // Fetch and display articles for each blog
             const articlesResponse = await fetch(`/blogs/${blog.id}`);
             const articles = await articlesResponse.json();
             const articlesContainer = blogElement.querySelector('.articles');
@@ -57,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Add a new blog
     blogForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('blogTitle').value;
@@ -74,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBlogs();
     });
 
-    // Add a new article
     articleForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('articleTitle').value;
@@ -92,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBlogs();
     });
 
-    // Edit a blog
     editBlogForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('editBlogTitle').value;
@@ -110,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBlogs();
     });
 
-    // Edit an article
     editArticleForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('editArticleTitle').value;
@@ -128,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBlogs();
     });
 
-    // Edit or delete a blog, or add/edit/delete an article
+    
     personalSpaceContainer.addEventListener('click', async (e) => {
         if (e.target.classList.contains('deleteBlog')) {
             const blogId = e.target.getAttribute('data-id');
