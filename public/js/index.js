@@ -1,4 +1,23 @@
+function getCookie(name) {
+    const cookies = document.cookie.split('; ');
+    for (let cookie of cookies) {
+        const [key, value] = cookie.split('=');
+        if (key === name) {
+            return value;
+        }
+    }
+    return null;
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
+    let token = sessionStorage.getItem('token');
+    let cookie = getCookie('jwt');
+    if (!token && cookie) {
+        token = cookie;
+        document.cookie = `jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        sessionStorage.setItem('token', token);
+    }
     fetch('/blogs')
         .then(response => response.json())
         .then(blogs => {
@@ -22,12 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const twoFactorAuth = document.getElementById('setup2FAButton');
 twoFactorAuth.addEventListener("onclick", () => {
-    const token = sessionStorage.getItem('token'); // Retrieve the token from sessionStorage
-    console.log('token:', token);
-
-    if (!token) {
-        console.error('No token found in sessionStorage');
-        return;
+    let token = sessionStorage.getItem('token');
+    let cookie = getCookie('jwt');
+    if (!token && cookie) {
+        token = cookie;
+        document.cookie = `jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        sessionStorage.setItem('token', token);
     }
 
     fetch('/qrcode', {
