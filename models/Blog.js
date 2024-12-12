@@ -1,7 +1,7 @@
 // models/Blog.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize');
-const User = require('./User'); // Ensure User is imported after sequelize is defined
+const User = require('./User');
 
 const Blog = sequelize.define('Blog', {
     title: {

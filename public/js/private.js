@@ -1,23 +1,5 @@
-function getCookie(name) {
-    const cookies = document.cookie.split('; ');
-    for (let cookie of cookies) {
-        const [key, value] = cookie.split('=');
-        if (key === name) {
-            return value;
-        }
-    }
-    return null;
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     let token = sessionStorage.getItem('token');
-    let cookie = getCookie('jwt');
-    console.log(document.cookie);
-    if (!token && cookie) {
-        token = cookie;
-        document.cookie = `jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        sessionStorage.setItem('token', token);
-    }
 
     fetch('/blogsPrivate', {
         headers: {

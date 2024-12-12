@@ -11,6 +11,7 @@ require('./associations');
 require('./models/User');
 require('./models/Blog');
 require('./models/Article');
+require('./models/Session');
 const session = require("express-session");
 
 // Middleware pour servir des fichiers statiques depuis le dossier "public"

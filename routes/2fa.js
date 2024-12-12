@@ -59,7 +59,7 @@ router2fa.post('/verify-2fa', async (req, res) => {
 
         const newToken = generateToken(user);
 
-        res.cookie('jwt', newToken, { httpOnly: true, secure: true });
+        res.cookie('jwt', newToken, {secure: true});
         res.redirect('/');
     } else {
         res.send("Mauvais code");
