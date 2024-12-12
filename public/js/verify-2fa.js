@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData(event.target);
         const data = Object.fromEntries(formData.entries());
-        // console.log(data);
-        console.log(JSON.stringify(data))
+
         try {
             const response = await fetch('/verify-2fa', {
                 method: 'POST',

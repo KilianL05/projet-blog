@@ -38,7 +38,6 @@ router2fa.get('/verify-2fa', (req, res) => {
 });
 
 router2fa.post('/verify-2fa', async (req, res) => {
-    console.log(req);
     const username = req.body.username;
     const token = req.body.token;
     const authToken = req.body.authToken;
