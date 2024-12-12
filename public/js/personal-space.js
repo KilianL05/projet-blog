@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBlogs();
     });
 
-    
+
     personalSpaceContainer.addEventListener('click', async (e) => {
         if (e.target.classList.contains('deleteBlog')) {
             const blogId = e.target.getAttribute('data-id');
