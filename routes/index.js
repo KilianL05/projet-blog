@@ -20,8 +20,12 @@ router.get('/blog/:id', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/blogDetail.html'));
 });
 
-router.get("/personal-space" , verify2FaEnabled, (req, res) => {
+router.get("/personal-space" , (req, res) => {
     res.sendFile(path.join(__dirname, '../public/personal-space.html'));
+});
+
+router.get("/personal-spaceCheck", verify2FaEnabled, (req, res) => {
+    return res.status(200).send("2FA enabled");
 });
 
 
