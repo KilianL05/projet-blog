@@ -8,20 +8,20 @@ const {verify2FaEnabled, authenticateToken} = require("../middlewares/auth");
 /////BLOG////
 
 router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(path.join(__dirname, '../public/blogs/index.html'));
 });
 
 router.get('/blogs/private', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/private.html'));
+    res.sendFile(path.join(__dirname, '../public/blogs/privates.html'));
 });
 
 // Route pour rendre la page des détails d'un blog
 router.get('/blog/:id', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/blogDetail.html'));
+    res.sendFile(path.join(__dirname, '../public/blogs/show.html'));
 });
 
 router.get("/personal-space" , (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/personal-space.html'));
+    res.sendFile(path.join(__dirname, '../public/profile/personal-space.html'));
 });
 
 router.get("/personal-spaceCheck", verify2FaEnabled, (req, res) => {
@@ -156,8 +156,9 @@ router.get('/blogs/:id', async (req, res) => {
 
 
 // Route pour obtenir tous les blogs
-router.get('/blogs', async (req, res) => {
+router.get('/blogsPublic', async (req, res) => {
     try {
+
         const blogs = await Blog.findAll({where: {isPublic: 1}});
         res.json(blogs);
     } catch (err) {

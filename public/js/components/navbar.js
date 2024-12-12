@@ -1,4 +1,4 @@
-import { deleteCookie } from './utils.js';
+import { deleteCookie } from '../utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    console.log('Token:', token);
     if (!token) {
         personalSpaceButton.classList.add('hidden');
     }

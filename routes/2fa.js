@@ -10,7 +10,7 @@ const path = require("path");
 
 const router2fa = express.Router();
 router2fa.get('/2fa', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/2fa.html'));
+    res.sendFile(path.join(__dirname, '../public/auth/2fa.html'));
 });
 router2fa.get('/qrcode', authenticateToken, async (req, res) => {
     const authHeader = req.headers['authorization'];
@@ -51,7 +51,7 @@ router2fa.get('/qrcode', authenticateToken, async (req, res) => {
     });
 });
 router2fa.get('/verify-2fa', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/verify-2fa.html'));
+    res.sendFile(path.join(__dirname, '../public/auth/verify-2fa.html'));
 });
 
 router2fa.post('/verify-2fa', async (req, res) => {

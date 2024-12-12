@@ -12,7 +12,7 @@ const {authenticator} = require("otplib"); // Correct import
 const routerAuth = express.Router();
 
 routerAuth.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
+    res.sendFile(path.join(__dirname, '../public/auth/login.html'));
 });
 
 routerAuth.get('/login/federated/google', passport.authenticate('google'));
@@ -67,7 +67,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 routerAuth.get("/register", (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
+    res.sendFile(path.join(__dirname, '../public/auth/register.html'));
 });
 
 routerAuth.post('/register', async (req, res) => {

@@ -1,4 +1,4 @@
-import { getCookie, deleteCookie } from './utils.js';
+import { getCookie, deleteCookie } from '../utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     let token = sessionStorage.getItem('token');
@@ -9,7 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
         deleteCookie('jwt');
         sessionStorage.setItem('token', token);
     }
-    fetch('/blogs')
+
+    fetch('/blogsPublic', {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
         .then(response => response.json())
         .then(blogs => {
             const blogsContainer = document.getElementById('blogsContainer');
