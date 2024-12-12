@@ -1,24 +1,18 @@
-
-function getCookie(name) {
-    const cookies = document.cookie.split('; ');
-    for (let cookie of cookies) {
-        const [key, value] = cookie.split('=');
-        if (key === name) {
-            return value;
-        }
-    }
-    return null;
-}
-
-
 document.addEventListener('DOMContentLoaded', function () {
     let token = sessionStorage.getItem('token');
 
-    if (!token) {
-        token = getCookie('jwt');
+    console.log(document.cookie);
 
+    if (!token) {
+        document.cookie.split('; ').forEach(cookie => {
+            const [key, value] = cookie.split('=');
+            if (key === 'jwt') {
+                token = value;
+            }
+        });
         sessionStorage.setItem('token', token);
     }
+
 
     fetch('/blogsPrivate', {
         headers: {
@@ -32,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = '/login';
                 throw new Error('Unauthorized');
             } else if (response.status === 403) {
-                // window.location.href = '/';
                 throw new Error('Forbidden, 2FA not enabled');
             }
         })

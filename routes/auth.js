@@ -22,7 +22,7 @@ routerAuth.get('/oauth2/redirect/google', passport.authenticate('google', {
 }), (req, res) => {
     // Generate JWT token
     const token = generateToken(req.user);
-    res.cookie('jwt', token, { httpOnly: true, secure: true, maxAge: 3600000 }); // 1 hour
+    res.cookie('jwt', token, { secure: true, maxAge: 3600000 }); // 1 hour
     res.redirect('/');
 });
 
