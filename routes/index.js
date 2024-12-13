@@ -30,9 +30,11 @@ router.get('/blog/:id', async (req, res) => {
 });
 
 router.get("/personal-space", authenticateToken, async (req, res) => {
-    const blogs = await Blog.findAll({where: {userId: req.user.id}});
-    console.log(blogs);
-    res.render('profile/personal-space', {blogs});
+    const blogs = await Blog.findAll({
+        where: { userId: req.user.id },
+        include: [{ model: Article, as: 'Articles' }]
+    });
+    res.render('profile/personal-space', { blogs });
 });
 
 
@@ -45,7 +47,6 @@ router.post('/blog', authenticateToken, verify2FaEnabled, async (req, res) => {
             userId: req.user.id
         });
         res.status(201).json(blog);
-        res.render('personal-space');
     } catch (err) {
         console.error('Erreur lors de la création du blog :', err);
         res.status(500).json({error: 'Erreur lors de la création du blog.'});
@@ -58,7 +59,6 @@ router.delete('/blog/:id', authenticateToken, verify2FaEnabled, async (req, res)
         const blog = await Blog.findByPk(req.params.id);
         if (blog) {
             await blog.destroy();
-            res.render('personal-space');
             res.json({message: 'Blog supprimé avec succès!'});
         } else {
             res.status(404).json({error: 'Blog non trouvé'});
@@ -75,7 +75,6 @@ router.put('/blog/:id', authenticateToken, verify2FaEnabled, async (req, res) =>
         const blog = await Blog.findByPk(req.params.id);
         if (blog) {
             await blog.update(req.body);
-            res.render('personal-space');
             res.json(blog);
         } else {
             res.status(404).json({error: 'Blog non trouvé'});
@@ -94,7 +93,6 @@ router.post('/blog/:id/article', authenticateToken, verify2FaEnabled, async (req
             content: req.body.content,
             blogId: req.params.id
         });
-        res.render('personal-space');
         res.status(201).json(article);
     } catch (err) {
         console.error('Erreur lors de la création de l\'article :', err);
@@ -108,7 +106,7 @@ router.delete('/article/:id', authenticateToken, verify2FaEnabled, async (req, r
         const article = await Article.findByPk(req.params.id);
         if (article) {
             await article.destroy();
-            res.render('personal-space');
+
             res.json({message: 'Article supprimé avec succès!'});
         } else {
             res.status(404).json({error: 'Article non trouvé'});
@@ -125,7 +123,6 @@ router.put('/article/:id', authenticateToken, verify2FaEnabled, async (req, res)
         const article = await Article.findByPk(req.params.id);
         if (article) {
             await article.update(req.body);
-            res.render('personal-space');
             res.json(article);
         } else {
             res.status(404).json({error: 'Article non trouvé'});

@@ -23,15 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, isPublic }),
         });
         blogForm.classList.add('hidden');
-        refreshPersonalSpace();
+        await refreshPersonalSpace();
     });
 
+    // public/js/profile/personal-space.js
     articleForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('articleTitle').value;
         const content = document.getElementById('articleContent').value;
         const blogId = articleForm.getAttribute('data-blog-id');
-        await fetch(`/blog/${blogId}/article`, {
+        const response = await fetch(`/blog/${blogId}/article`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,8 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({ title, content }),
         });
-        articleForm.classList.add('hidden');
-        refreshPersonalSpace();
+        if (response.ok) {
+            articleForm.classList.add('hidden');
+            await refreshPersonalSpace();
+        } else {
+            console.error('Erreur lors de la création de l\'article');
+        }
     });
 
     editBlogForm.addEventListener('submit', async (e) => {
@@ -57,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, isPublic }),
         });
         editBlogForm.classList.add('hidden');
-        refreshPersonalSpace();
+        await refreshPersonalSpace();
     });
 
     editArticleForm.addEventListener('submit', async (e) => {
@@ -74,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, content }),
         });
         editArticleForm.classList.add('hidden');
-        refreshPersonalSpace();
+        await refreshPersonalSpace();
     });
 
     personalSpaceContainer.addEventListener('click', async (e) => {
@@ -86,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                 },
             });
-            refreshPersonalSpace();
+            await refreshPersonalSpace();
         } else if (e.target.classList.contains('editBlog')) {
             const blogId = e.target.getAttribute('data-id');
             const blogTitle = e.target.parentElement.querySelector('h2').innerText;
@@ -107,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                 },
             });
-            refreshPersonalSpace();
+            await refreshPersonalSpace();
         } else if (e.target.classList.contains('editArticle')) {
             const articleId = e.target.getAttribute('data-id');
             const articleTitle = e.target.parentElement.querySelector('h3').innerText;
