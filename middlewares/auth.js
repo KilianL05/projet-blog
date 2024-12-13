@@ -5,8 +5,9 @@ const Session = require('../models/Session');
 async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'] || req.cookies['token'];
 
-
-    if (!authHeader) return res.sendStatus(401);
+    if (!authHeader || authHeader === 'null') {
+        return res.status(401).send("Vous devez être connecté");
+    }
 
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
 
@@ -16,22 +17,26 @@ async function authenticateToken(req, res, next) {
         const session = await Session.findOne({ where: { token: token, userId: user.id } });
 
         if (!session || session.expiresAt < new Date()) {
-            return res.sendStatus(401);
+            return res.status(401).send("Session expirée ou invalide.");
         }
         req.user = user;
         next();
     } catch (err) {
-        return res.sendStatus(403);
+        return res.status(403).send("Non autorisé.");
     }
 }
 
 function verify2FaEnabled(req, res, next) {
     const authHeader = req.headers['authorization'] || req.cookies['token'];
-    if (!authHeader) return res.sendStatus(401);
+    if (!authHeader || authHeader === 'null') {
+        return res.status(401).send("Vous devez être connecté");
+    }
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
     const user = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!user.twoFactorEnabled) return res.sendStatus(403);
+    if (!user.twoFactorEnabled) {
+        return res.status(403).send("L'authentification à deux facteurs n'est pas activée.");
+    }
     next();
 }
 

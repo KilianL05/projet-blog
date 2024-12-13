@@ -28,17 +28,14 @@ router.get('/blog/:id', async (req, res) => {
     });
     //Pour bloquer l'accés aux détails d'un blog privé si on n'est pas connécté
     if (blog.isPublic === false) {
-        console.log("C'est privé")
         const token = req.headers['authorization'] || req.cookies['token'];
         if (!token) {
-            console.log("Pas de token")
-            return res.sendStatus(401); // Unauthorized if no token is provided
+            return res.status(401).send("Vous devez être connecté pour accéder à ce blog.");
         }
         try {
             req.user = verify(token, process.env.JWT_SECRET);
         } catch (err) {
-            console.log("Token invalide")
-            return res.sendStatus(403); // Forbidden if token is invalid
+            return res.status(403).send("Non autorisé");
         }
     }
     res.render('blogs/show', { blog });
