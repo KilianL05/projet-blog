@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
-app.set('layout', 'layout'); // Set the default layout
+app.set('layout', 'layout');
 
 // Configure session middleware
 app.use(session({
