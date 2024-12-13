@@ -14,14 +14,18 @@ require('./models/Article');
 require('./models/Session');
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const expressLayouts = require('express-ejs-layouts');
 
 // Middleware pour servir des fichiers statiques depuis le dossier "public"
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
+
+app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
+app.set('layout', 'layout'); // Set the default layout
 
 // Configure session middleware
 app.use(session({
