@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!token) {
         console.error('No token found in sessionStorage');
+        window.location.href = '/login';
         return;
     }
 
