@@ -77,7 +77,7 @@ router2fa.post('/verify-2fa', async (req, res) => {
         user = await User.findOne({where: {email: username}});
 
         const newToken = generateToken(user);
-        const expiresAt = new Date(Date.now() + 3600000); // 1 hour
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
 
         // Update the session with the new token
