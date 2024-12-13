@@ -98,9 +98,6 @@ Vous devez réaliser une application de création de blog. Chaque personne peut 
 
 ### Blogs
 
-- **GET /blogsPublic** : Récupération de tous les blogs publics.
-- **GET /blogsPrivate** : Récupération de tous les blogs privés (authentification requise).
-- **GET /blogs/user** : Récupération des blogs de l'utilisateur connecté (authentification requise).
 - **POST /blog** : Création d'un nouveau blog (authentification requise).
 - **PUT /blog/:id** : Mise à jour d'un blog existant (authentification requise).
 - **DELETE /blog/:id** : Suppression d'un blog existant (authentification requise).
