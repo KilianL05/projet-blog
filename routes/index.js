@@ -27,7 +27,6 @@ router.get('/blog/:id', async (req, res) => {
         }]
     })
     res.render('blogs/show', {blog});
-    res.render('blogs/show');
 });
 
 router.get("/personal-space", authenticateToken, verify2FaEnabled, async (req, res) => {
