@@ -1,7 +1,6 @@
 const express = require('express');
-const path = require("path");
 const {hash, compare} = require("bcrypt");
-const {generateToken, authenticateToken, verify2FaEnabled} = require("../middlewares/auth");
+const {generateToken, authenticateToken} = require("../middlewares/auth");
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc');
 const User = require('../models/User');
@@ -12,7 +11,7 @@ const {authenticator} = require("otplib"); // Correct import
 const routerAuth = express.Router();
 
 routerAuth.get("/login", (req, res) => {
-    res.render("auth/login");
+    res.render("auth/login", {layout: false});
 });
 
 routerAuth.get('/login/federated/google', passport.authenticate('google'));
@@ -68,7 +67,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 routerAuth.get("/register", (req, res) => {
-    res.render("auth/register");
+    res.render("auth/register", {layout: false});
 });
 
 routerAuth.post('/register', async (req, res) => {
