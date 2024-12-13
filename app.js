@@ -18,6 +18,8 @@ const session = require("express-session");
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.set('view engine', 'ejs');
+app.set('views', join(__dirname, 'views'));
 
 // Configure session middleware
 app.use(session({

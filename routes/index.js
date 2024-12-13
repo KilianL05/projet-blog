@@ -8,20 +8,20 @@ const {verify2FaEnabled, authenticateToken} = require("../middlewares/auth");
 /////BLOG////
 
 router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/blogs/index.html'));
+    res.render("blogs/index");
 });
 
 router.get('/blogs/private', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/blogs/privates.html'));
+    res.render('blogs/privates')
 });
 
 // Route pour rendre la page des détails d'un blog
 router.get('/blog/:id', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/blogs/show.html'));
+    res.render('blogs/show');
 });
 
 router.get("/personal-space", authenticateToken, verify2FaEnabled, (req, res) => {
-   return res.sendFile(path.join(__dirname, '../public/profile/personal-space.html'));
+    res.render('profile/personal-space')
 });
 
 router.get("/personal-spaceCheck", verify2FaEnabled, authenticateToken, (req, res) => {
