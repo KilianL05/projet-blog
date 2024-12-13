@@ -43,7 +43,8 @@ document.getElementById('accessPrivateBlog').addEventListener('click', async () 
 
 document.getElementById('setup2FAButton').addEventListener('click', () => {
     const token = sessionStorage.getItem('token');
-    createCookie('token', token, 10000000000000000); // 1 day expiration
+    const oneDayInSeconds = 24 * 60 * 60;
+    createCookie('token', token, oneDayInSeconds);
 
     window.location.href = '/2fa';
 });
