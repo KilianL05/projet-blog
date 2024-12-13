@@ -9,9 +9,12 @@ const {authenticateToken, generateToken} = require("../middlewares/auth");
 const path = require("path");
 
 const router2fa = express.Router();
-router2fa.get('/2fa', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/auth/2fa.html'));
+
+router2fa.get('/2fa', authenticateToken, (req, res) => {
+    res.render("2fa/index");
 });
+
+
 router2fa.get('/qrcode', authenticateToken, async (req, res) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;

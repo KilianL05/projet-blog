@@ -13,11 +13,13 @@ require('./models/Blog');
 require('./models/Article');
 require('./models/Session');
 const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 // Middleware pour servir des fichiers statiques depuis le dossier "public"
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser())
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 

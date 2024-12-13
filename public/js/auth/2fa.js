@@ -52,3 +52,5 @@ document.getElementById('logoutAllButton').addEventListener('click', async () =>
         alert(errorText);
     }
 });
+
+

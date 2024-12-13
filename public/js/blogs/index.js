@@ -1,4 +1,4 @@
-import { getCookie, deleteCookie } from '../utils.js';
+import { getCookie, deleteCookie, createCookie } from '../utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     let token = sessionStorage.getItem('token');
@@ -35,36 +35,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 });
 
-const twoFactorAuth = document.getElementById('setup2FAButton');
-twoFactorAuth.addEventListener("click", () => {
-    let token = sessionStorage.getItem('token');
-    let cookie = getCookie('jwt');
-    if (!token && cookie) {
-        token = cookie;
-        deleteCookie('jwt');
-        sessionStorage.setItem('token', token);
-    }
-
-    fetch('/qrcode', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(html => {
-            document.getElementById('qrcode-container').innerHTML = html;
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-});
 
 document.getElementById('accessPrivateBlog').addEventListener('click', async () => {
     window.location.href = '/blogs/private';
+});
+
+
+document.getElementById('setup2FAButton').addEventListener('click', () => {
+    const token = sessionStorage.getItem('token');
+    createCookie('token', token, 10000000000000000); // 1 day expiration
+
+    window.location.href = '/2fa';
 });

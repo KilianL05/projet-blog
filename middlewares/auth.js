@@ -3,7 +3,10 @@ const jwt = require('jsonwebtoken');
 const Session = require('../models/Session');
 
 async function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['authorization'] || req.cookies['token'];
+    console.log("header " + authHeader);
+    console.log("cookie " + req.cookies['token']);
+
 
     if (!authHeader) return res.sendStatus(401);
 
