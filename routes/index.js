@@ -4,6 +4,7 @@ const Blog = require('../models/Blog');
 const Article = require('../models/Article');
 const path = require("path");
 const {verify2FaEnabled, authenticateToken} = require("../middlewares/auth");
+const {verify} = require("jsonwebtoken");
 
 /////BLOG////
 
@@ -17,7 +18,6 @@ router.get('/blogs/private', authenticateToken ,async (req, res) => {
     res.render('blogs/privates', { blogs });
 });
 
-// Route pour rendre la page des détails d'un blog
 router.get('/blog/:id', async (req, res) => {
     const blogId = req.params.id;
     const blog = await Blog.findByPk(blogId, {
@@ -25,8 +25,23 @@ router.get('/blog/:id', async (req, res) => {
             model: Article,
             as: 'Articles'
         }]
-    })
-    res.render('blogs/show', {blog});
+    });
+    //Pour bloquer l'accés aux détails d'un blog privé si on n'est pas connécté
+    if (blog.isPublic === false) {
+        console.log("C'est privé")
+        const token = req.headers['authorization'] || req.cookies['token'];
+        if (!token) {
+            console.log("Pas de token")
+            return res.sendStatus(401); // Unauthorized if no token is provided
+        }
+        try {
+            req.user = verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            console.log("Token invalide")
+            return res.sendStatus(403); // Forbidden if token is invalid
+        }
+    }
+    res.render('blogs/show', { blog });
 });
 
 router.get("/personal-space", authenticateToken, async (req, res) => {

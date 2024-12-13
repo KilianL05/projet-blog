@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authButton.addEventListener('click', async () => {
             sessionStorage.removeItem('token');
             deleteCookie('jwt');
+            deleteCookie('token');
 
             await fetch('/logout', {
                 method: 'POST',
