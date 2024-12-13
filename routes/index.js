@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     res.render('blogs/index', {blogs});
 });
 
-router.get('/blogs/private', authenticateToken ,async (req, res) => {
+router.get('/blogs/private', authenticateToken, verify2FaEnabled ,async (req, res) => {
     const blogs = await Blog.findAll({ where: { isPublic: 0 } });
     res.render('blogs/privates', { blogs });
 });
@@ -29,7 +29,7 @@ router.get('/blog/:id', async (req, res) => {
     res.render('blogs/show', {blog});
 });
 
-router.get("/personal-space", authenticateToken, verify2FaEnabled, async (req, res) => {
+router.get("/personal-space", authenticateToken, async (req, res) => {
     const blogs = await Blog.findAll({where: {userId: req.user.id}});
     res.render('profile/personal-space', {blogs});
 });

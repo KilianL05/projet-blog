@@ -20,7 +20,8 @@ routerAuth.get('/login/federated/google', passport.authenticate('google'));
 routerAuth.get('/oauth2/redirect/google', passport.authenticate('google', {
     failureRedirect: '/login'
 }), async (req, res) => {
-    const token = generateToken(req.user);
+    const user = await User.findOne({where: {email: req.user.email}});
+    const token = generateToken(user);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
 
     await Session.create({userId: req.user.id, token, expiresAt});
@@ -102,7 +103,6 @@ routerAuth.post('/login', async (req, res) => {
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         await Session.create({userId: user.id, token, expiresAt});
-        
         res.cookie('jwt', token, {secure: true});
         res.json({token: token});
 
