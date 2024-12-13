@@ -26,7 +26,7 @@ routerAuth.get('/oauth2/redirect/google', passport.authenticate('google', {
     await Session.create({userId: req.user.id, token, expiresAt});
 
     res.cookie('jwt', token, {secure: true, maxAge: 3600000}); // 1 hour
-    res.redirect('/');
+    res.redirect('/blogs');
 });
 
 passport.use(new GoogleStrategy({

@@ -14,7 +14,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
     const result = await response.json();
     if (response.ok) {
         sessionStorage.setItem('token', result.token);
-        window.location.href = '/';
+        window.location.href = '/blogs';
     } else {
         alert(result.error);
     }

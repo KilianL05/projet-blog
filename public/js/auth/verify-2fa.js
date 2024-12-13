@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             if (response.ok) {
-                window.location.href = '/';
+                window.location.href = '/blogs';
             } else {
                 const errorText = await response.text();
                 alert(errorText);

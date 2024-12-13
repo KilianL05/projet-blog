@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Blog = require('../models/Blog');
 const Article = require('../models/Article');
-const path = require("path");
 const {verify2FaEnabled, authenticateToken} = require("../middlewares/auth");
 const {verify} = require("jsonwebtoken");
 
 /////BLOG////
 
-router.get('/', async (req, res) => {
+router.get('/blogs', async (req, res) => {
     const blogs = await Blog.findAll({where: {isPublic: 1}});
     res.render('blogs/index', {blogs});
 });

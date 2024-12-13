@@ -102,6 +102,8 @@ Vous devez réaliser une application de création de blog. Chaque personne peut 
 - **PUT /blog/:id** : Mise à jour d'un blog existant (authentification requise).
 - **DELETE /blog/:id** : Suppression d'un blog existant (authentification requise).
 - **GET /blogs/:id** : Récupération d'un blog par son ID avec ses articles.
+- **GET /blogs** : Récupération de tous les blogs publics.
+- **GET /blogs/private** : Récupération de tous les blogs privés**
 
 ### Articles
 
@@ -112,7 +114,6 @@ Vous devez réaliser une application de création de blog. Chaque personne peut 
 ### Espace personnel
 
 - **GET /personal-space** : Page de l'espace personnel de l'utilisateur.
-- **GET /personal-spaceCheck** : Vérification de l'activation de l'authentification à deux facteurs (authentification requise).
 
 Ces routes permettent de gérer l'authentification des utilisateurs, l'authentification à deux facteurs, ainsi que la création, la lecture, la mise à jour et la suppression de blogs et d'articles.
 

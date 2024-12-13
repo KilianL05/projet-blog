@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Session = require('../models/Session');
 const {authenticateToken, generateToken} = require("../middlewares/auth");
-const path = require("path");
 
 const router2fa = express.Router();
 
@@ -84,7 +83,7 @@ router2fa.post('/verify-2fa', async (req, res) => {
         await Session.update({token: newToken, expiresAt: expiresAt}, {where: {userId: user.id, token: authToken}});
 
         res.cookie('jwt', newToken, {secure: true});
-        res.redirect('/');
+        res.redirect('/blogs');
     } else {
         res.send("Mauvais code");
     }

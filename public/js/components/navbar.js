@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            window.location.href = '/';
+            window.location.href = '/blogs';
         });
     } else {
         authButton.textContent = 'Connexion';

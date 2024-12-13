@@ -35,6 +35,9 @@ app.use(session({
     cookie: { maxAge: 60000 }
 }));
 
+app.get('/', (req, res) => {
+    res.redirect('/blogs');
+});
 // Use routes
 app.use('/', indexRoutes);
 app.use('/', authRoutes);
