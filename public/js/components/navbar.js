@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
         personalSpaceButton.classList.add('hidden');
     }
 
+    personalSpaceButton.addEventListener('click', async () => {
+        const oneDayInSeconds = 24 * 60 * 60;
+        createCookie('token', token, oneDayInSeconds);
+        window.location.href = '/personal-space';
+    });
+
     if (token) {
         authButton.textContent = 'Déconnexion';
         authButton.addEventListener('click', async () => {

@@ -44,7 +44,7 @@ router.get('/blog/:id', async (req, res) => {
     res.render('blogs/show', { blog });
 });
 
-router.get("/personal-space", authenticateToken, async (req, res) => {
+router.get("/personal-space", authenticateToken,verify2FaEnabled, async (req, res) => {
     const blogs = await Blog.findAll({
         where: { userId: req.user.id },
         include: [{ model: Article, as: 'Articles' }]
