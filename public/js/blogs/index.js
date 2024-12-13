@@ -22,6 +22,7 @@ document.getElementById('setup2FAButton').addEventListener('click', () => {
 
 document.getElementById('accessPrivateBlog').addEventListener('click', () => {
     const token = sessionStorage.getItem('token');
+    console.log('Token:', token);
     createCookie('token', token, 86400); // 1 day expiration
     window.location.href = '/blogs/private';
 });
