@@ -1,8 +1,14 @@
-# Projet Blog
+## Informations générales
 
-## Description
+**Groupe** : Killian Levasseur, Jules Artaud
 
-Ce projet est une application de blog qui permet aux utilisateurs de créer, lire, mettre à jour et supprimer des blogs et des articles. Il inclut également une authentification à deux facteurs (2FA) pour une sécurité accrue.
+**Stack du projet** :
+- HTML, JavaScript pour le frontend
+- NodeJS (Express) pour le backend
+- MySQL pour la base de données
+
+**Contexte** :
+Vous devez réaliser une application de création de blog. Chaque personne peut créer son espace, dès le moment où celle-ci a créé son compte. Le blog de chaque personne peut être disponible en public (chaque visiteur peut lire les contenus sans pour autant être identifié) ou en privé (le visiteur doit disposer d'un compte et être identifié pour visualiser le contenu). Des privilèges doivent être plus élevés pour créer du contenu : dans ce cas, une authentification à deux facteurs est nécessaire.
 
 ## Fonctionnalités
 
@@ -71,6 +77,47 @@ Ce projet est une application de blog qui permet aux utilisateurs de créer, lir
 - Accédez à l'application via `http://localhost:3000`
 - Inscrivez-vous et connectez-vous pour utiliser les fonctionnalités de blog
 - Activez l'authentification à deux facteurs pour une sécurité accrue avec l'application mobile Google Authenticator
+
+## Routes
+
+### Authentification
+
+- **POST /register** : Inscription d'un nouvel utilisateur.
+- **POST /login** : Connexion d'un utilisateur existant.
+- **POST /logout** : Déconnexion de l'utilisateur actuel.
+- **POST /logout-all** : Déconnexion de l'utilisateur actuel de tous les appareils.
+- **GET /login/federated/google** : Connexion via Google.
+- **GET /oauth2/redirect/google** : Redirection après l'authentification Google.
+
+### Authentification à deux facteurs (2FA)
+
+- **GET /2fa** : Page de configuration de l'authentification à deux facteurs.
+- **GET /qrcode** : Génération du QR code pour l'authentification à deux facteurs.
+- **GET /verify-2fa** : Page de vérification de l'authentification à deux facteurs.
+- **POST /verify-2fa** : Vérification du code TOTP pour l'authentification à deux facteurs.
+
+### Blogs
+
+- **GET /blogsPublic** : Récupération de tous les blogs publics.
+- **GET /blogsPrivate** : Récupération de tous les blogs privés (authentification requise).
+- **GET /blogs/user** : Récupération des blogs de l'utilisateur connecté (authentification requise).
+- **POST /blog** : Création d'un nouveau blog (authentification requise).
+- **PUT /blog/:id** : Mise à jour d'un blog existant (authentification requise).
+- **DELETE /blog/:id** : Suppression d'un blog existant (authentification requise).
+- **GET /blogs/:id** : Récupération d'un blog par son ID avec ses articles.
+
+### Articles
+
+- **POST /blog/:id/article** : Création d'un nouvel article dans un blog (authentification requise).
+- **PUT /article/:id** : Mise à jour d'un article existant (authentification requise).
+- **DELETE /article/:id** : Suppression d'un article existant (authentification requise).
+
+### Espace personnel
+
+- **GET /personal-space** : Page de l'espace personnel de l'utilisateur.
+- **GET /personal-spaceCheck** : Vérification de l'activation de l'authentification à deux facteurs (authentification requise).
+
+Ces routes permettent de gérer l'authentification des utilisateurs, l'authentification à deux facteurs, ainsi que la création, la lecture, la mise à jour et la suppression de blogs et d'articles.
 
 ## Auteurs
 

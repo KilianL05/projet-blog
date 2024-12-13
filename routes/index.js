@@ -20,11 +20,11 @@ router.get('/blog/:id', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/blogs/show.html'));
 });
 
-router.get("/personal-space" , (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/profile/personal-space.html'));
+router.get("/personal-space", authenticateToken, verify2FaEnabled, (req, res) => {
+   return res.sendFile(path.join(__dirname, '../public/profile/personal-space.html'));
 });
 
-router.get("/personal-spaceCheck", verify2FaEnabled, (req, res) => {
+router.get("/personal-spaceCheck", verify2FaEnabled, authenticateToken, (req, res) => {
     return res.status(200).send("2FA enabled");
 });
 
@@ -41,7 +41,7 @@ router.get('/blogs/user', authenticateToken, async (req, res) => {
 });
 
 // Route pour créer un blog
-router.post('/blog', authenticateToken, async (req, res) => {
+router.post('/blog', authenticateToken, verify2FaEnabled, async (req, res) => {
     try {
         const blog = await Blog.create({
             title: req.body.title,
@@ -56,7 +56,7 @@ router.post('/blog', authenticateToken, async (req, res) => {
 });
 
 // Route pour supprimer un blog
-router.delete('/blog/:id', async (req, res) => {
+router.delete('/blog/:id', authenticateToken, verify2FaEnabled, async (req, res) => {
     try {
         const blog = await Blog.findByPk(req.params.id);
         if (blog) {
@@ -72,7 +72,7 @@ router.delete('/blog/:id', async (req, res) => {
 });
 
 // Route pour mettre à jour un blog
-router.put('/blog/:id', async (req, res) => {
+router.put('/blog/:id', authenticateToken, verify2FaEnabled, async (req, res) => {
     try {
         const blog = await Blog.findByPk(req.params.id);
         if (blog) {
@@ -88,7 +88,7 @@ router.put('/blog/:id', async (req, res) => {
 });
 
 // Route pour créer un article
-router.post('/blog/:id/article', async (req, res) => {
+router.post('/blog/:id/article', authenticateToken, verify2FaEnabled, async (req, res) => {
     try {
         const article = await Article.create({
             title: req.body.title,
@@ -103,7 +103,7 @@ router.post('/blog/:id/article', async (req, res) => {
 });
 
 // Route pour supprimer un article
-router.delete('/article/:id', async (req, res) => {
+router.delete('/article/:id', authenticateToken, verify2FaEnabled, async (req, res) => {
     try {
         const article = await Article.findByPk(req.params.id);
         if (article) {
@@ -119,7 +119,7 @@ router.delete('/article/:id', async (req, res) => {
 });
 
 // Route pour mettre à jour un article
-router.put('/article/:id', async (req, res) => {
+router.put('/article/:id', authenticateToken, verify2FaEnabled, async (req, res) => {
     try {
         const article = await Article.findByPk(req.params.id);
         if (article) {
@@ -134,7 +134,7 @@ router.put('/article/:id', async (req, res) => {
     }
 });
 
-// Route pour obtenir un blog par son ID avec ses articles
+
 router.get('/blogs/:id', async (req, res) => {
     try {
         const blog = await Blog.findByPk(req.params.id, {
@@ -143,11 +143,16 @@ router.get('/blogs/:id', async (req, res) => {
                 as: 'Articles'
             }]
         });
-        if (blog) {
-            res.json(blog);
-        } else {
-            res.status(404).json({error: 'Blog non trouvé'});
+
+        if (!blog) {
+            return res.status(404).json({error: 'Blog non trouvé'});
         }
+
+        if (!blog.isPublic && !req.user) {
+            return res.status(401).json({error: 'Accès non autorisé'});
+        }
+
+        res.json(blog);
     } catch (err) {
         console.error('Erreur lors de la récupération du blog :', err);
         res.status(500).json({error: 'Erreur lors de la récupération du blog.'});

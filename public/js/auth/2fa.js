@@ -34,8 +34,7 @@ document.getElementById('logoutAllButton').addEventListener('click', async () =>
     if (!twoFactorCode) {
         return;
     }
-    console.log('Token:', token);
-    console.log('2FA code:', twoFactorCode);
+
     const response = await fetch('/logout-all', {
         method: 'POST',
         headers: {

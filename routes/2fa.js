@@ -65,8 +65,7 @@ router2fa.post('/verify-2fa', async (req, res) => {
 
     let user = await User.findOne({where: {email: username}});
     const authenticatorSecret = user.twoFactorSecret;
-    console.log("authenticatorSecret", authenticatorSecret);
-    console.log("token", token);
+
 
     const isValid = authenticator.verify({token, secret: authenticatorSecret});
 
@@ -77,8 +76,7 @@ router2fa.post('/verify-2fa', async (req, res) => {
         const newToken = generateToken(user);
         const expiresAt = new Date(Date.now() + 3600000); // 1 hour
 
-        console.log("newToken", newToken);
-        console.log("oldToken", authToken);
+
         // Update the session with the new token
         await Session.update({token: newToken, expiresAt: expiresAt}, {where: {userId: user.id, token: authToken}});
 

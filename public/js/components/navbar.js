@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const personalSpaceButton = document.getElementById('personalSpaceButton');
 
     personalSpaceButton.addEventListener('click', async () => {
-        const response = await fetch('/personal-spaceCheck', {
+        const response = await fetch('/personal-space', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (response.ok) {
-            window.location.href = '/personal-space';
         } else {
             alert('Vous devez être connecté et activer la double authentification pour accéder à votre espace personnel.');
             console.error('Failed to access personal space:', response.statusText);
@@ -40,8 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.location.href = '/';
         });
-
-
     } else {
         authButton.textContent = 'Connexion';
         authButton.addEventListener('click', () => {

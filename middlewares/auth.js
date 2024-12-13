@@ -12,8 +12,6 @@ async function authenticateToken(req, res, next) {
         const user = jwt.verify(token, process.env.JWT_SECRET);
 
         const session = await Session.findOne({ where: { token: token, userId: user.id } });
-        console.log("coucou")
-        console.log(session);
 
         if (!session || session.expiresAt < new Date()) {
             return res.sendStatus(401);
