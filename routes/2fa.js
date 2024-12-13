@@ -53,8 +53,8 @@ router2fa.get('/qrcode', authenticateToken, async (req, res) => {
 `);
     });
 });
-router2fa.get('/verify-2fa', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/auth/verify-2fa.html'));
+router2fa.get('/verify-2fa', authenticateToken, (req, res) => {
+    res.render("2fa/verify-2fa");
 });
 
 router2fa.post('/verify-2fa', async (req, res) => {
