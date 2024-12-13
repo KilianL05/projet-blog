@@ -6,8 +6,6 @@ async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'] || req.cookies['token'];
     console.log("header " + authHeader);
     console.log("cookie " + req.cookies['token']);
-
-
     if (!authHeader) return res.sendStatus(401);
 
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
@@ -19,7 +17,6 @@ async function authenticateToken(req, res, next) {
         if (!session || session.expiresAt < new Date()) {
             return res.sendStatus(401);
         }
-
         req.user = user;
         next();
     } catch (err) {
@@ -28,7 +25,7 @@ async function authenticateToken(req, res, next) {
 }
 
 function verify2FaEnabled(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['authorization'] || req.cookies['token'];
     if (!authHeader) return res.sendStatus(401);
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
     const user = jwt.verify(token, process.env.JWT_SECRET);

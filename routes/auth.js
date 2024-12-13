@@ -104,6 +104,7 @@ routerAuth.post('/login', async (req, res) => {
         await Session.create({ userId: user.id, token, expiresAt });
 
         res.cookie('jwt', token, { secure: true });
+        res.cookie('token', token );
         res.json({ token: token });
     } catch (err) {
         res.status(500).json({ error: 'Une erreur s’est produite lors de l’authentification.' + err });

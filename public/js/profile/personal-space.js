@@ -5,50 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const editArticleForm = document.getElementById('editArticleForm');
     const personalSpaceContainer = document.getElementById('personalSpaceContainer');
     const toggleBlogFormButton = document.getElementById('toggleBlogForm');
-    const toggleArticleFormButton = document.getElementById('toggleArticleForm');
 
     toggleBlogFormButton.addEventListener('click', () => {
         blogForm.classList.toggle('hidden');
     });
-
-
-    const fetchBlogs = async () => {
-        const response = await fetch('/blogs/user', {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-            }
-        });
-        const blogs = await response.json();
-        personalSpaceContainer.innerHTML = '';
-        for (const blog of blogs) {
-            const blogElement = document.createElement('div');
-            blogElement.className = 'bg-white p-4 rounded shadow-md';
-            blogElement.innerHTML = `
-                <h2 class="text-xl font-bold">${blog.title}</h2>
-                <p>${blog.isPublic ? 'Public' : 'Private'}</p>
-                <button class="editBlog bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700" data-id="${blog.id}">Editer</button>
-                <button class="deleteBlog bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700" data-id="${blog.id}">Supprimer</button>
-                <button class="addArticle bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700" data-id="${blog.id}">Ajouter Article</button>
-                <div class="articles mt-4"></div>
-            `;
-            personalSpaceContainer.appendChild(blogElement);
-
-            const articlesResponse = await fetch(`/blogs/${blog.id}`);
-            const articles = await articlesResponse.json();
-            const articlesContainer = blogElement.querySelector('.articles');
-            articles.Articles.forEach(article => {
-                const articleElement = document.createElement('div');
-                articleElement.className = 'bg-gray-100 p-2 rounded mt-2';
-                articleElement.innerHTML = `
-                    <h3 class="text-lg font-semibold">${article.title}</h3>
-                    <p>${article.content}</p>
-                    <button class="editArticle bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700" data-id="${article.id}">Editer</button>
-                    <button class="deleteArticle bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700" data-id="${article.id}">Supprimer</button>
-                `;
-                articlesContainer.appendChild(articleElement);
-            });
-        }
-    };
 
     blogForm.addEventListener('submit', async (e) => {
         e.preventDefault();

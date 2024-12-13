@@ -1,24 +1,9 @@
-import { deleteCookie } from '../utils.js';
+import { deleteCookie, createCookie } from '../utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
     const authButton = document.getElementById('authButton');
     const personalSpaceButton = document.getElementById('personalSpaceButton');
-
-    personalSpaceButton.addEventListener('click', async () => {
-        const response = await fetch('/personal-space', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-        } else {
-            alert('Vous devez être connecté et activer la double authentification pour accéder à votre espace personnel.');
-            console.error('Failed to access personal space:', response.statusText);
-        }
-    });
 
     if (!token) {
         personalSpaceButton.classList.add('hidden');

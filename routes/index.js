@@ -7,25 +7,32 @@ const {verify2FaEnabled, authenticateToken} = require("../middlewares/auth");
 
 /////BLOG////
 
-router.get('/', (req, res) => {
-    res.render("blogs/index");
+router.get('/', async (req, res) => {
+    const blogs = await Blog.findAll({where: {isPublic: 1}});
+    res.render('blogs/index', {blogs});
 });
 
-router.get('/blogs/private', (req, res) => {
-    res.render('blogs/privates')
+router.get('/blogs/private', authenticateToken ,async (req, res) => {
+    const blogs = await Blog.findAll({ where: { isPublic: 0 } });
+    res.render('blogs/privates', { blogs });
 });
 
 // Route pour rendre la page des détails d'un blog
-router.get('/blog/:id', (req, res) => {
+router.get('/blog/:id', async (req, res) => {
+    const blogId = req.params.id;
+    const blog = await Blog.findByPk(blogId, {
+        include: [{
+            model: Article,
+            as: 'Articles'
+        }]
+    })
+    res.render('blogs/show', {blog});
     res.render('blogs/show');
 });
 
-router.get("/personal-space", authenticateToken, verify2FaEnabled, (req, res) => {
-    res.render('profile/personal-space')
-});
-
-router.get("/personal-spaceCheck", verify2FaEnabled, authenticateToken, (req, res) => {
-    return res.status(200).send("2FA enabled");
+router.get("/personal-space", authenticateToken, verify2FaEnabled, async (req, res) => {
+    const blogs = await Blog.findAll({where: {userId: req.user.id}});
+    res.render('profile/personal-space', {blogs});
 });
 
 
@@ -156,29 +163,6 @@ router.get('/blogs/:id', async (req, res) => {
     } catch (err) {
         console.error('Erreur lors de la récupération du blog :', err);
         res.status(500).json({error: 'Erreur lors de la récupération du blog.'});
-    }
-});
-
-
-// Route pour obtenir tous les blogs
-router.get('/blogsPublic', async (req, res) => {
-    try {
-
-        const blogs = await Blog.findAll({where: {isPublic: 1}});
-        res.json(blogs);
-    } catch (err) {
-        console.error('Erreur lors de la récupération des blogs :', err);
-        res.status(500).json({error: 'Erreur lors de la récupération des blogs.'});
-    }
-});
-
-router.get('/blogsPrivate', authenticateToken, async (req, res) => {
-    try {
-        const blogs = await Blog.findAll({where: {isPublic: 0}});
-        res.json(blogs);
-    } catch (err) {
-        console.error('Erreur lors de la récupération des blogs :', err);
-        res.status(500).json({error: 'Erreur lors de la récupération des blogs.'});
     }
 });
 
