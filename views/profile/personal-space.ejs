@@ -83,6 +83,7 @@
     </form>
   </div>
 
+  <!-- views/profile/personal-space.ejs -->
   <div id="personalSpaceContainer" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <% blogs.forEach(blog => { %>
       <div class="bg-white p-4 rounded shadow-md">
@@ -92,14 +93,16 @@
         <button class="deleteBlog bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700" data-id="<%= blog.id %>">Supprimer</button>
         <button class="addArticle bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700" data-id="<%= blog.id %>">Ajouter Article</button>
         <div class="articles mt-4">
-          <% blog.Articles.forEach(article => { %>
-            <div class="bg-gray-100 p-2 rounded mt-2">
-              <h3 class="text-lg font-semibold"><%= article.title %></h3>
-              <p><%= article.content %></p>
-              <button class="editArticle bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700" data-id="<%= article.id %>">Editer</button>
-              <button class="deleteArticle bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700" data-id="<%= article.id %>">Supprimer</button>
-            </div>
-          <% }) %>
+          <% if (blog.Articles) { %>
+            <% blog.Articles.forEach(article => { %>
+              <div class="bg-gray-100 p-2 rounded mt-2">
+                <h3 class="text-lg font-semibold"><%= article.title %></h3>
+                <p><%= article.content %></p>
+                <button class="editArticle bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700" data-id="<%= article.id %>">Editer</button>
+                <button class="deleteArticle bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700" data-id="<%= article.id %>">Supprimer</button>
+              </div>
+            <% }) %>
+          <% } %>
         </div>
       </div>
     <% }) %>

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, isPublic }),
         });
         blogForm.classList.add('hidden');
-        fetchBlogs();
+        refreshPersonalSpace();
     });
 
     articleForm.addEventListener('submit', async (e) => {
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, content }),
         });
         articleForm.classList.add('hidden');
-        fetchBlogs();
+        refreshPersonalSpace();
     });
 
     editBlogForm.addEventListener('submit', async (e) => {
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, isPublic }),
         });
         editBlogForm.classList.add('hidden');
-        fetchBlogs();
+        refreshPersonalSpace();
     });
 
     editArticleForm.addEventListener('submit', async (e) => {
@@ -74,9 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ title, content }),
         });
         editArticleForm.classList.add('hidden');
-        fetchBlogs();
+        refreshPersonalSpace();
     });
-
 
     personalSpaceContainer.addEventListener('click', async (e) => {
         if (e.target.classList.contains('deleteBlog')) {
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                 },
             });
-            fetchBlogs();
+            refreshPersonalSpace();
         } else if (e.target.classList.contains('editBlog')) {
             const blogId = e.target.getAttribute('data-id');
             const blogTitle = e.target.parentElement.querySelector('h2').innerText;
@@ -108,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                 },
             });
-            fetchBlogs();
+            refreshPersonalSpace();
         } else if (e.target.classList.contains('editArticle')) {
             const articleId = e.target.getAttribute('data-id');
             const articleTitle = e.target.parentElement.querySelector('h3').innerText;
@@ -120,5 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    fetchBlogs();
+    async function refreshPersonalSpace() {
+        const response = await fetch('/personal-space', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            },
+        });
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        personalSpaceContainer.innerHTML = doc.getElementById('personalSpaceContainer').innerHTML;
+    }
 });
